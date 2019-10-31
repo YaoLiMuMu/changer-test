@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QUdpSocket>
+#include <QTimer>
 
 namespace Ui {
 class Widget;
@@ -26,9 +27,34 @@ private slots:
 
     void on_radioButton2_clicked();
 
+    void periodMessage();
+
+    unsigned char * sumCheck(unsigned char dat[],short Length);
+
+    void read_data();
+
+    void on_pushButton_clicked();
+
+    void on_radioButton1_1_clicked();
+
+    void on_radioButton1_2_clicked();
+
+    void on_radioButton2_1_clicked();
+
+    void on_radioButton2_2_clicked();
+
+    void on_radioButton2_3_clicked();
+
+    void on_radioButton2_4_clicked();
+
+    void on_radioButton1_3_clicked();
+
+    void on_radioButton1_4_clicked();
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
+    QTimer *myTimer;
 };
 
 #endif // WIDGET_H
