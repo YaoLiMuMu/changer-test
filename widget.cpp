@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include <QUdpSocket>
 #include <numeric>
+#include <iostream>
 
 const short Len1 = 7;
 const short Len2 = 8;
@@ -77,13 +78,17 @@ void Widget::periodMessage()
 {
     unsigned char buf1[] = {0x02, 0x00, 0x03, 0xa0, 0x32, 0x00};
     unsigned char buf2[] = {0x02, 0x00, 0x03, 0xa0, 0x09, 0x00};    // read eletronic locks
+    unsigned char buf3[] = {0x02, 0x00, 0x04, 0xa0, 0x00, 0x01, 0x00}; // read work mode
     unsigned char *p1 = sumCheck(buf1, Len1);
     unsigned char *p2 = sumCheck(buf2, Len1);
+    unsigned char *p3 = sumCheck(buf3, Len2);
     QByteArray ba1((char*)p1, Len1);
     QByteArray ba2((char*)p2, Len1);
+    QByteArray ba3((char*)p3, Len2);
 //    mSocket->writeDatagram(ba1,Len1,QHostAddress(stripAdress),leftport);
 //    mSocket->writeDatagram(ba1,Len1,QHostAddress(stripAdress),rightport);
     mSocket->writeDatagram(ba2,Len1,QHostAddress(stripAdress),leftport);
+    mSocket->writeDatagram(ba3,Len2,QHostAddress(stripAdress),leftport);
 }
 
 // Read messages
@@ -96,7 +101,6 @@ void Widget::read_data()
     int size = array.size();
     mSocket->readDatagram(array.data(),array.size(),&address,&port);
     ui->listWidget->addItem(array);
-    qDebug() << "first array " << array.toHex();
     char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
     for (int i = 0; i < (size-1); ++i) {
         sum+=array.at(i);
@@ -109,12 +113,23 @@ void Widget::read_data()
         memcpy(buf,array,size-3);
         unsigned char eleLock1[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00};
         unsigned char eleLock2[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x01};
-        if (strcmp((char*) eleLock1, (char*) buf) == 0)
-            ui->label1->setText(QString::fromLocal8Bit("锁止"));
-        if (strcmp((char*) eleLock2, (char*) buf) == 0)
-            ui->label1->setText(QString::fromLocal8Bit("解锁"));
-        qDebug() << "\n size" << array.length()
-                 << "\n array" << array.toHex();
+        unsigned char mode1[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        unsigned char mode2[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+        // show eletronic locks
+        if (arraycmp(eleLock1, buf, sizeof (eleLock1), sizeof (buf)) == 1)
+            ui->label1->setText(QString::fromLocal8Bit("锁定"));
+        else {
+            if (arraycmp(eleLock2, buf, sizeof (eleLock1), sizeof (buf)) == 1)
+                ui->label1->setText(QString::fromLocal8Bit("解锁"));
+        }
+        // show work mode
+        if (arraycmp(mode1, buf, sizeof (mode1), sizeof (buf)) == 1)
+            ui->label1_1->setText(QString::fromLocal8Bit("自动模式"));
+        else {
+            if (arraycmp(mode2, buf, sizeof (mode2), sizeof (buf)) == 1)
+                ui->label1_1->setText(QString::fromLocal8Bit("手动模式"));
+        }
+        qDebug() << "\n array" << array.toHex();
     }
 }
 
@@ -130,6 +145,20 @@ unsigned char * Widget::sumCheck(unsigned char dat[], short Length)
         temp[len] = dat[i] + temp[len];
     }
     return temp;
+}
+
+// compare two arrays
+bool Widget::arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b)
+{
+    bool e = 1;
+    unsigned long count = 0;
+    if(a == b)
+        while (e && count < a) {
+            if (arrayA[count] != arrayB[count])
+                e = 0;
+            count++;
+        }
+    return e;
 }
 
 // Manual/Automatic

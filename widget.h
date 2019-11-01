@@ -31,6 +31,8 @@ private slots:
 
     unsigned char * sumCheck(unsigned char dat[],short Length);
 
+    bool arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b);
+
     void read_data();
 
     void on_pushButton_clicked();
