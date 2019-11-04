@@ -22,6 +22,7 @@ Widget::Widget(QWidget *parent) :
     myTimer = new QTimer(this);
     connect(myTimer, SIGNAL(timeout()), this, SLOT(periodMessage()));
     myTimer->start(1000);
+    setWindowTitle(tr("NEBULA CHANGER"));
 }
 
 Widget::~Widget()
@@ -100,7 +101,7 @@ void Widget::read_data()
     array.resize(mSocket->bytesAvailable());    // or array.resize(mSocket->pendingDatagramSize());
     int size = array.size();
     mSocket->readDatagram(array.data(),array.size(),&address,&port);
-    ui->listWidget->addItem(array);
+    ui->listWidget->addItem(array); //  or ui->listWidget->insertItem(1, array);
     char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
     for (int i = 0; i < (size-1); ++i) {
         sum+=array.at(i);
