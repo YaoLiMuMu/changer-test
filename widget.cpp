@@ -9,11 +9,12 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    mSocket = new QUdpSocket();
+    mSocket = new QUdpSocket();     // left Socket
+    sSocket = new QUdpSocket();     // right Socket
     mSocket->bind(QHostAddress::AnyIPv4,leftport);  // mSocket->bind(2001,QHostAddress::ShareAdress);
-//    mSocket->bind(QHostAddress::AnyIPv4,rightport);
-//    mSocket->close();
-    connect(mSocket,SIGNAL(readyRead()),this,SLOT(read_data()));
+    sSocket->bind(QHostAddress::AnyIPv4,rightport); // mSocket->close(); to close port
+    connect(mSocket,SIGNAL(readyRead()),this,SLOT(read_L()));
+    connect(sSocket,SIGNAL(readyRead()),this,SLOT(read_R()));
     myTimer = new QTimer(this);
     connect(myTimer, SIGNAL(timeout()), this, SLOT(periodMessage()));
     myTimer->start(1000);
@@ -75,7 +76,7 @@ void Widget::periodMessage()
 }
 
 // Read messages
-void Widget::read_data()
+void Widget::read_L()
 {
     QByteArray array;
     QHostAddress address;
@@ -120,6 +121,22 @@ void Widget::read_data()
     }
 }
 
+void Widget::read_R()
+{
+    QByteArray array;
+    QHostAddress address;
+    quint16 port;
+    QDateTime time = QDateTime::currentDateTime();
+    QString frametime = time.toString("hh:mm:ss");
+    QDataStream in (&array, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_6);
+    in >> port;
+//    out<<(quint32) 0;
+//    out.device()->seek(0);
+//    out << (quint32)(block.size()- sizeof(quint32));
+//    out << (unsigned char)0x02;
+}
+
 // sum Check for messages
 unsigned char * Widget::sumCheck(unsigned char dat[], short Length)
 {
@@ -154,7 +171,7 @@ void Widget::sendDatagram(unsigned char buf[], short Length, quint16 port)
         unsigned char *p = sumCheck(buf,Length);
         QByteArray ba(reinterpret_cast<char*>(p), Length);
         mSocket->writeDatagram(ba,Length,QHostAddress(stripAdress),port);
-        qDebug() << "Sending successfully " << ba.toHex();
+        qDebug() << QDateTime::currentDateTime() <<"Sending successfully " << ba.toHex();
 }
 
 // Manual/Automatic

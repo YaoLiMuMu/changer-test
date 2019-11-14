@@ -36,7 +36,9 @@ private slots:
 
     bool arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b);
 
-    void read_data();
+    void read_L();
+
+    void read_R();
 
     void sendDatagram(unsigned char buf[], short Length, quint16 port);
 
@@ -61,6 +63,7 @@ private slots:
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
+    QUdpSocket *sSocket;
     QTimer *myTimer;
     short Len1 = 7;
     short Len2 = 8;
