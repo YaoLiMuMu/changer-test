@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QUdpSocket>
 #include <QTimer>
+#include <QDateTime>
+#include <QDataStream>
+#include <QFile>
 
 namespace Ui {
 class Widget;
@@ -29,11 +32,13 @@ private slots:
 
     void periodMessage();
 
-    unsigned char * sumCheck(unsigned char dat[],short Length);
+    unsigned char * sumCheck(unsigned char dat[], short Length);
 
     bool arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b);
 
     void read_data();
+
+    void sendDatagram(unsigned char buf[], short Length, quint16 port);
 
     void on_pushButton_clicked();
 
@@ -57,6 +62,11 @@ private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
     QTimer *myTimer;
+    short Len1 = 7;
+    short Len2 = 8;
+    quint16 leftport = 2001;
+    quint16 rightport = 2002;
+    QString stripAdress = "192.168.1.60";
 };
 
 #endif // WIDGET_H
