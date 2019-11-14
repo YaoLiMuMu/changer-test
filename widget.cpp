@@ -11,7 +11,8 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     mSocket = new QUdpSocket();
     mSocket->bind(QHostAddress::AnyIPv4,leftport);  // mSocket->bind(2001,QHostAddress::ShareAdress);
-    mSocket->bind(QHostAddress::AnyIPv4,rightport);
+//    mSocket->bind(QHostAddress::AnyIPv4,rightport);
+//    mSocket->close();
     connect(mSocket,SIGNAL(readyRead()),this,SLOT(read_data()));
     myTimer = new QTimer(this);
     connect(myTimer, SIGNAL(timeout()), this, SLOT(periodMessage()));
@@ -28,44 +29,29 @@ Widget::~Widget()
 void Widget::on_radioButton1_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x01};
-    unsigned char *p = sumCheck(buf,Len1);
-    QByteArray ba((char*) p, Len1);  // or QByteArray ba = QByteArray::fromHex("020003a00801ae");
-    //    QDataStream out(&ba2,QIODevice::WriteOnly);
-    //    out.setVersion(QDataStream::Qt_4_8);
-        QFile file("file.dat");
-        file.open(QIODevice::WriteOnly);
-        QDataStream out(&file);
-        out<<QDateTime::currentDateTime()<<ba.toHex();
-    mSocket->writeDatagram(ba,Len1,QHostAddress(stripAdress),leftport);
-    qDebug() << "Lock Messsage" << ba.toHex();
-
+    emit sendDatagram(buf,Len1,leftport);
+    qDebug() << "Lock Messsage";
 }
 
 void Widget::on_radioButton2_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x00};
-    unsigned char *p = sumCheck(buf, Len1);
-    QByteArray ba((char*)p, Len1);
-    mSocket->writeDatagram(ba,Len1,QHostAddress(stripAdress),leftport);
-    qDebug() << "Unlock Message" << ba.toHex();
+    emit sendDatagram(buf,Len1,leftport);
+    qDebug() << "Unlock Message";
 }
 
 void Widget::on_radioButton3_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x01};
-    unsigned char *p = sumCheck(buf, Len1);
-    QByteArray ba((char*)p, Len1);
-    mSocket->writeDatagram(ba,Len1,QHostAddress(stripAdress),rightport);
-    qDebug() << "Lock Messsage" << ba.toHex();
+    emit sendDatagram(buf,Len1,rightport);
+    qDebug() << "Lock Messsage";
 }
 
 void Widget::on_radioButton4_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x00};
-    unsigned char *p =sumCheck(buf,Len1);
-    QByteArray ba((char*)p, Len1);
-    mSocket->writeDatagram(ba,Len1,QHostAddress(stripAdress),rightport);
-    qDebug() << "Unlock Message" << ba.toHex();
+    emit sendDatagram(buf,Len1,rightport);
+    qDebug() << "Unlock Message";
 }
 
 // Broadcast
@@ -80,16 +66,12 @@ void Widget::periodMessage()
     unsigned char buf1[] = {0x02, 0x00, 0x03, 0xa0, 0x32, 0x00};
     unsigned char buf2[] = {0x02, 0x00, 0x03, 0xa0, 0x09, 0x00};    // read eletronic locks
     unsigned char buf3[] = {0x02, 0x00, 0x04, 0xa0, 0x00, 0x01, 0x00}; // read work mode
-    unsigned char *p1 = sumCheck(buf1, Len1);
-    unsigned char *p2 = sumCheck(buf2, Len1);
-    unsigned char *p3 = sumCheck(buf3, Len2);
-    QByteArray ba1((char*)p1, Len1);
-    QByteArray ba2((char*)p2, Len1);
-    QByteArray ba3((char*)p3, Len2);
-//    mSocket->writeDatagram(ba1,Len1,QHostAddress(stripAdress),leftport);
-//    mSocket->writeDatagram(ba1,Len1,QHostAddress(stripAdress),rightport);
-    mSocket->writeDatagram(ba2,Len1,QHostAddress(stripAdress),leftport);
-    mSocket->writeDatagram(ba3,Len2,QHostAddress(stripAdress),leftport);
+    emit sendDatagram(buf1,Len1,leftport);
+    emit sendDatagram(buf1,Len1,rightport);
+    emit sendDatagram(buf2,Len1,leftport);
+    emit sendDatagram(buf2,Len1,rightport);
+    emit sendDatagram(buf3,Len2,leftport);
+    emit sendDatagram(buf3,Len2,rightport);
 }
 
 // Read messages
@@ -99,12 +81,13 @@ void Widget::read_data()
     QHostAddress address;
     quint16 port;
     QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("yyyy-MM-dd hh:mm:ss dddd");
+    QString frametime = time.toString("hh:mm:ss");    // or "yyyy-MM-dd hh:mm:ss dddd"
     array.resize(mSocket->bytesAvailable());    // or array.resize(mSocket->pendingDatagramSize());
     int size = array.size();
     mSocket->readDatagram(array.data(),array.size(),&address,&port);
-    ui->listWidget->addItem(str);
+    ui->listWidget->addItem(frametime);
     ui->listWidget->addItem(array.toHex()); //  or ui->listWidget->insertItem(1, array);
+//    qDebug() << "port" << port;
     char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
     for (int i = 0; i < (size-1); ++i) {
         sum+=array.at(i);
@@ -133,7 +116,7 @@ void Widget::read_data()
             if (arraycmp(mode2, buf, sizeof (mode2), sizeof (buf)) == 1)
                 ui->label1_1->setText(QString::fromLocal8Bit("手动模式"));
         }
-        qDebug() << "\n array" << array.toHex();
+//        qDebug() << "\n array" << array.toHex();
     }
 }
 
@@ -165,78 +148,71 @@ bool Widget::arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned l
     return e;
 }
 
+// send Messages for call
+void Widget::sendDatagram(unsigned char buf[], short Length, quint16 port)
+{
+        unsigned char *p = sumCheck(buf,Length);
+        QByteArray ba(reinterpret_cast<char*>(p), Length);
+        mSocket->writeDatagram(ba,Length,QHostAddress(stripAdress),port);
+        qDebug() << "Sending successfully " << ba.toHex();
+}
+
 // Manual/Automatic
 void Widget::on_radioButton1_1_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x00, 0x00, 0x01};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "Manual mode" << ba.toHex();
+    emit sendDatagram(buf,Len2,rightport);
+    qDebug() << "Manual mode";
 }
 
 void Widget::on_radioButton1_2_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x00, 0x00, 0x00};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "Automatic mode" << ba.toHex();
+    emit sendDatagram(buf,Len2,rightport);
+    qDebug() << "Automatic mode";
 }
 
 // K1/K2 output contactors control
 void Widget::on_radioButton2_1_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x03, 0x00};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "K1/K2 turn off" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "K1/K2 turn off";
 }
 
 void Widget::on_radioButton2_2_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x03, 0x01};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "K1/K2 turn on" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "K1/K2 turn on";
 }
 
 // K3/K4 auxiliary contactors control
 void Widget::on_radioButton2_3_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x06, 0x00};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "K3/K4 turn off" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "K3/K4 turn off";
 }
 
 void Widget::on_radioButton2_4_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x06, 0x01};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "K3/K4 turn on" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "K3/K4 turn on";
 }
 
 // Ki/Kii support contactors control
 void Widget::on_radioButton1_3_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x01, 0x00};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "Ki/Kii turn off" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "Ki/Kii turn off";
 }
 
 void Widget::on_radioButton1_4_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x01, 0x01};
-    unsigned char *p =sumCheck(buf,Len2);
-    QByteArray ba((char*)p, Len2);
-    mSocket->writeDatagram(ba,Len2,QHostAddress(stripAdress),rightport);
-    qDebug() << "Ki/Kii turn on" << ba.toHex();
+    emit sendDatagram(buf,Len2,leftport);
+    qDebug() << "Ki/Kii turn on";
 }
