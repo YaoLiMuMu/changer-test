@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1152</width>
-    <height>679</height>
+    <width>1162</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,50 +32,139 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
       <rect>
-       <x>440</x>
-       <y>30</y>
-       <width>171</width>
-       <height>96</height>
+       <x>900</x>
+       <y>20</y>
+       <width>211</width>
+       <height>111</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
      <property name="title">
-      <string>电源模块温度/℃</string>
+      <string>充电模块温度/℃</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="1">
-       <widget class="QLabel" name="label1_5">
+      <item row="0" column="3">
+       <widget class="QLabel" name="label1_7">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_7 {color:blue}</string>
+        </property>
         <property name="text">
-         <string>左枪</string>
+         <string>#3</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label1_6">
-        <property name="text">
-         <string>左枪</string>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label1_9">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_9 {color:blue}</string>
         </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label1_4">
         <property name="text">
-         <string>右枪</string>
+         <string>#5</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label1_3">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+          <underline>false</underline>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_3 {color:blue}</string>
+        </property>
         <property name="text">
          <string>左枪</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="label1_7">
+      <item row="4" column="1">
+       <widget class="QLabel" name="label1_8">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_8 {color:blue}</string>
+        </property>
         <property name="text">
-         <string>左枪</string>
+         <string>#4</string>
         </property>
        </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QLabel" name="label1_10">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_10 {color:blue}</string>
+        </property>
+        <property name="text">
+         <string>#6</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label1_6">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_6 {color:blue}</string>
+        </property>
+        <property name="text">
+         <string>#2</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label1_4">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+          <underline>false</underline>
+          <strikeout>false</strikeout>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_4 {color:blue}</string>
+        </property>
+        <property name="text">
+         <string>右枪</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label1_5">
+        <property name="styleSheet">
+         <string notr="true">QLabel#label1_5 {color:blue}</string>
+        </property>
+        <property name="text">
+         <string>#1</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -95,30 +184,33 @@
     <widget class="QListWidget" name="listWidget">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>30</x>
        <y>450</y>
-       <width>631</width>
+       <width>871</width>
        <height>161</height>
       </rect>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>80</y>
-       <width>371</width>
+       <y>10</y>
+       <width>401</width>
        <height>81</height>
       </rect>
      </property>
      <property name="title">
-      <string>工作模式</string>
+      <string>Mode</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QRadioButton" name="radioButton1_1">
         <property name="text">
-         <string>手动模式</string>
+         <string>Manual</string>
         </property>
        </widget>
       </item>
@@ -138,7 +230,7 @@
       <item>
        <widget class="QRadioButton" name="radioButton1_2">
         <property name="text">
-         <string>自动模式</string>
+         <string>Auto</string>
         </property>
        </widget>
       </item>
@@ -165,7 +257,7 @@
          </font>
         </property>
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
@@ -175,7 +267,7 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>170</y>
+       <y>100</y>
        <width>401</width>
        <height>84</height>
       </rect>
@@ -234,7 +326,7 @@
          </font>
         </property>
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
@@ -251,8 +343,8 @@
     <widget class="QGroupBox" name="groupBox1">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
+       <x>30</x>
+       <y>10</y>
        <width>401</width>
        <height>84</height>
       </rect>
@@ -311,7 +403,7 @@
          </font>
         </property>
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
@@ -320,48 +412,101 @@
     <widget class="QGroupBox" name="groupBox3">
      <property name="geometry">
       <rect>
-       <x>420</x>
-       <y>0</y>
-       <width>124</width>
-       <height>154</height>
+       <x>780</x>
+       <y>280</y>
+       <width>241</width>
+       <height>185</height>
       </rect>
      </property>
-     <property name="title">
-      <string>运行状态</string>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <property name="title">
+      <string>BMS</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label2_17">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>SOC</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QProgressBar" name="progressBar">
+        <property name="value">
+         <number>24</number>
+        </property>
+        <property name="textVisible">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
+       <widget class="QLabel" name="label3">
+        <property name="text">
+         <string>充电状态 </string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label2_3">
+        <property name="text">
+         <string>F</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="label5">
         <property name="text">
          <string>剩余时间</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label4">
+      <item row="2" column="1">
+       <widget class="QLabel" name="label2_4">
         <property name="text">
-         <string>空闲</string>
+         <string>F</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label7">
-        <property name="text">
-         <string>需求电流</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
        <widget class="QLabel" name="label6">
         <property name="text">
          <string>需求电压</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label3">
+      <item row="3" column="1">
+       <widget class="QLabel" name="label2_5">
         <property name="text">
-         <string>充电状态 </string>
+         <string>F</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label7">
+        <property name="text">
+         <string>需求电流</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label2_6">
+        <property name="text">
+         <string>F</string>
         </property>
        </widget>
       </item>
@@ -370,8 +515,8 @@
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>90</y>
+       <x>30</x>
+       <y>100</y>
        <width>401</width>
        <height>91</height>
       </rect>
@@ -430,7 +575,7 @@
          </font>
         </property>
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
@@ -439,8 +584,8 @@
     <widget class="QGroupBox" name="groupBox1_2">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>190</y>
+       <x>30</x>
+       <y>200</y>
        <width>401</width>
        <height>84</height>
       </rect>
@@ -499,11 +644,427 @@
          </font>
         </property>
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="geometry">
+      <rect>
+       <x>480</x>
+       <y>20</y>
+       <width>281</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Manual Charging</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEdit2_2"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit2_1"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pushButton2_1">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButton2_2">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label2_7">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Voltage/V</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label2_8">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Current/A</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_2</cstring>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>780</x>
+       <y>20</y>
+       <width>181</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Voltage/V</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLCDNumber" name="lcdNumber2_1">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(211, 215, 207);</string>
+        </property>
+        <property name="smallDecimalPoint">
+         <bool>true</bool>
+        </property>
+        <property name="digitCount">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>310</y>
+       <width>401</width>
+       <height>108</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Automatic Charging Mode</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QRadioButton" name="radioButton2_5">
+           <property name="text">
+            <string>自动充满</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton2_7">
+           <property name="text">
+            <string>按时充电</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton2_8">
+           <property name="text">
+            <string>收费模式</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton2_6">
+           <property name="text">
+            <string>电量模式</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QLineEdit" name="lineEdit2_5"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label2_11">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>F               </string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit2_2</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton2_5">
+          <property name="text">
+           <string>Load</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton2_6">
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="label2_12">
+     <property name="geometry">
+      <rect>
+       <x>690</x>
+       <y>400</y>
+       <width>86</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Voltage/V</string>
+     </property>
+     <property name="buddy">
+      <cstring>lineEdit2_2</cstring>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label2_13">
+     <property name="geometry">
+      <rect>
+       <x>690</x>
+       <y>430</y>
+       <width>82</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Current/A</string>
+     </property>
+     <property name="buddy">
+      <cstring>lineEdit2_2</cstring>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_7">
+     <property name="geometry">
+      <rect>
+       <x>970</x>
+       <y>20</y>
+       <width>181</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Current/A</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QLCDNumber" name="lcdNumber2_2">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(211, 215, 207);</string>
+        </property>
+        <property name="smallDecimalPoint">
+         <bool>true</bool>
+        </property>
+        <property name="digitCount">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_8">
+     <property name="geometry">
+      <rect>
+       <x>780</x>
+       <y>140</y>
+       <width>184</width>
+       <height>125</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Device Status</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label2_14">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>AB Voltage</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLCDNumber" name="lcdNumber2_3">
+        <property name="smallDecimalPoint">
+         <bool>true</bool>
+        </property>
+        <property name="digitCount">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label2_15">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>BC Voltage</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLCDNumber" name="lcdNumber2_4">
+        <property name="smallDecimalPoint">
+         <bool>true</bool>
+        </property>
+        <property name="digitCount">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label2_16">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>CA Voltage</string>
+        </property>
+        <property name="buddy">
+         <cstring>lineEdit2_2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLCDNumber" name="lcdNumber2_5">
+        <property name="smallDecimalPoint">
+         <bool>true</bool>
+        </property>
+        <property name="digitCount">
+         <number>7</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QListWidget" name="listWidget2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>470</y>
+       <width>871</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
@@ -513,8 +1074,8 @@
     <widget class="QGroupBox" name="groupBox2">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
+       <x>30</x>
+       <y>10</y>
        <width>401</width>
        <height>84</height>
       </rect>
@@ -566,11 +1127,86 @@
       <item>
        <widget class="QLabel" name="label3_1">
         <property name="text">
-         <string/>
+         <string>F</string>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QGroupBox" name="groupBox2_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>100</y>
+       <width>401</width>
+       <height>84</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>K1/K2 Contactors</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <item>
+       <widget class="QRadioButton" name="radioButton3_1">
+        <property name="text">
+         <string>OFF</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_13">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton3_2">
+        <property name="text">
+         <string>ON</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_14">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label3_2">
+        <property name="text">
+         <string>F</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QListWidget" name="listWidget3">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>460</y>
+       <width>871</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
     </widget>
    </widget>
   </widget>

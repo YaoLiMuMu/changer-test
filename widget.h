@@ -40,7 +40,11 @@ private slots:
 
     void read_R();
 
-    void sendDatagram(unsigned char buf[], short Length, quint16 port);
+    void sendDatagram(unsigned char buf[], short Length, quint16 port, QUdpSocket *Socket);
+
+    void processPendingDatagrams(QUdpSocket *Socket);
+
+    QByteArray processQString(QString item, int k);
 
     void on_pushButton_clicked();
 
@@ -60,6 +64,28 @@ private slots:
 
     void on_radioButton1_4_clicked();
 
+    void on_pushButton2_1_clicked();
+
+    void on_pushButton2_2_clicked();
+
+    void on_listWidget_customContextMenuRequested(const QPoint &pos);
+
+    void cleanSeedSlot();
+
+    void copySeedSlot();
+
+    void on_pushButton2_5_clicked();
+
+    void on_radioButton2_7_clicked();
+
+    void on_radioButton2_8_clicked();
+
+    void on_radioButton2_6_clicked();
+
+    void on_radioButton2_5_clicked();
+
+    void on_pushButton2_6_clicked();
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
@@ -70,6 +96,7 @@ private:
     quint16 leftport = 2001;
     quint16 rightport = 2002;
     QString stripAdress = "192.168.1.60";
+    QByteArray member = QByteArray::fromHex("000000");  // at.(0): working mode //at.(1):Power module Status // at.(2): Device charging Status
 };
 
 #endif // WIDGET_H
