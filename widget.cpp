@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QClipboard>
+#include <QTextCodec>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -15,10 +16,13 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     mSocket = new QUdpSocket();     // left Socket
     sSocket = new QUdpSocket();     // right Socket
+    bSocket = new QUdpSocket();     // Broadcast Socket
     mSocket->bind(QHostAddress::AnyIPv4,leftport);  // mSocket->bind(2001,QHostAddress::ShareAdress);
     sSocket->bind(QHostAddress::AnyIPv4,rightport); // mSocket->close(); to close port
+    bSocket->bind(QHostAddress::AnyIPv4,1021);      // Broadcast
     connect(mSocket,SIGNAL(readyRead()),this,SLOT(read_L()));
     connect(sSocket,SIGNAL(readyRead()),this,SLOT(read_R()));
+    connect(bSocket,SIGNAL(readyRead()),this,SLOT(broadcastmessage()));
     myTimer = new QTimer(this);
     connect(myTimer, SIGNAL(timeout()), this, SLOT(periodMessage()));
     myTimer->start(1000);
@@ -62,8 +66,30 @@ void Widget::on_radioButton4_clicked()
 // Broadcast
 void Widget::on_pushButton_clicked()
 {
-    QByteArray ba = QByteArray::fromHex("55");
-    mSocket->writeDatagram(ba,1,QHostAddress("255.255.255.255"),1021);
+    QByteArray ba= QByteArray::fromHex("55");
+    bSocket->writeDatagram(ba,1,QHostAddress::Broadcast,1021);
+}
+void Widget::broadcastmessage()
+{
+//    ui->comboBox->clear();
+    QByteArray array;
+    array.resize(bSocket->bytesAvailable());
+    QHostAddress recvaddress;
+    quint16 port;
+    bSocket->readDatagram(array.data(),array.size(),&recvaddress,&port);
+//    QByteArray array = QByteArray::fromHex("4e6562756c615f4368617267696e6733c0a8013cac54c3a1e23c");
+    quint8 val1 = array.at(16);
+    quint8 val2 = array.at(17);
+    quint8 val3 = array.at(18);
+    quint8 val4 = array.at(19);
+    QString Ipstr = QString::asprintf("%d.%d.%d.%d" ,val1,val2,val3,val4);
+    QString macstr = (array.mid(20,10).toHex());
+    QString string(array.remove(16,10));
+    if (Device_Node.contains(macstr))
+        return;
+    Device_Node.insert(macstr, Ipstr);
+    foreach(const QString &str, Device_Node.keys())
+        ui->comboBox->addItem("Name: " + string + " IP: " + Ipstr + " Mac: " + macstr,Device_Node.value(str));
 }
 
 void Widget::periodMessage()
@@ -72,6 +98,7 @@ void Widget::periodMessage()
     unsigned char buf2[] = {0x02, 0x00, 0x03, 0xa0, 0x09, 0x00};    // read eletronic locks
     unsigned char buf3[] = {0x02, 0x00, 0x04, 0xa0, 0x00, 0x01, 0x00}; // read work mode
     unsigned char buf4[] = {0x02, 0x00, 0x03, 0xa0, 0x0f, 0x00}; // read K1/K2
+    unsigned char buf5[] = {0x02, 0x00, 0x03, 0xa0, 0x11, 0x00}; // read Ki/Kii
     emit sendDatagram(buf1,Len1,leftport,mSocket);
     emit sendDatagram(buf1,Len1,rightport,sSocket);
     emit sendDatagram(buf2,Len1,leftport,mSocket);
@@ -80,6 +107,7 @@ void Widget::periodMessage()
     emit sendDatagram(buf3,Len2,rightport,sSocket);
     emit sendDatagram(buf4,Len1,leftport,mSocket);
     emit sendDatagram(buf4,Len1,rightport,sSocket);
+    emit sendDatagram(buf5,Len1,leftport,mSocket);
 }
 
 // Read messages
@@ -94,21 +122,21 @@ void Widget::read_R()
 }
 
 // process Datagrams
-void Widget::processPendingDatagrams(QUdpSocket *Socket)
+void Widget::processPendingDatagrams(QUdpSocket * rSocket)
 {
     unsigned char eleLock[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00};
     unsigned char km1[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00};
     unsigned char mode[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    unsigned char mode2[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+    unsigned char kmii[] = {0x0a, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x00};
     QByteArray array;
     QHostAddress address;
     quint16 port;
     QDateTime time = QDateTime::currentDateTime();
     QString timeblock = time.toString("hh:mm:ss");    // or "yyyy-MM-dd hh:mm:ss dddd"
-    array.resize(Socket->bytesAvailable());    // or array.resize(Socket->pendingDatagramSize());
+    array.resize(rSocket->bytesAvailable());    // or array.resize(Socket->pendingDatagramSize());
     int size = array.size();
-    Socket->readDatagram(array.data(),array.size(),&address,&port);
-    ui->listWidget->addItem(timeblock + array.toHex()); //  or ui->listWidget->insertItem(1, array);
+    rSocket->readDatagram(array.data(),array.size(),&address,&port);
+    ui->listWidget->addItem(timeblock + "   " +array.toHex()); //  or ui->listWidget->insertItem(1, array);
     qDebug() << "port " << port << ": " << array.toHex();
     char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
     for (int i = 0; i < (size-1); ++i) {
@@ -143,39 +171,67 @@ void Widget::processPendingDatagrams(QUdpSocket *Socket)
                 }
             }
             // show work status
-            if (buf[0] == 0x36)
+            if (buf[0] == 0x36) // array start length byte!!
             {
-                ui->label1_5->setText(tr("%1 °C").arg(buf[52]));    // Power module #1 temperature
-                ui->label1_6->setText(tr("%1 °C").arg(buf[53]));    // Power module #2 temperature
-                ui->label1_7->setText(tr("%1 °C").arg(buf[54]));    // Power module #3 temperature
+                ui->lcdNumber1_1->display(buf[52]);     // Power module #1 temperature
+                ui->lcdNumber1_2->display(buf[53]);     // Power module #2 temperature
+                ui->lcdNumber1_3->display(buf[54]);     // Power module #3 temperature
                 if (buf[10] == 0x00)
                     ui->label2_3->setText(QString::fromLocal8Bit("Free"));  // Device Charing Status
-                else if (buf[10] == 0x01) {
+                else if (buf[11] == 0x01) {
                     ui->label2_3->setText(QString::fromLocal8Bit("Loading"));
                     member.data()[2] = 0x55;
                 }
                 quint32 temp1 = (buf[13]<<24)+(buf[14]<<16)+(buf[15]<<8)+buf[16];
                 ui->label2_5->setText(tr("%1 V").arg(temp1));   // MBS Demand Voltage
                 // MBS Demand Current
-                quint32 temp2 = (buf[20]<<24)+(buf[21]<<16)+(buf[22]<<8)+buf[23];
+                quint32 temp2 = (buf[21]<<24)+(buf[22]<<16)+(buf[23]<<8)+buf[24];
+                qDebug() << "temp2" << temp2;
                 double temp3 = ((double) temp2)/1000;
-                ui->lcdNumber2_1->display(750.10);   // Output Voltage
-                quint32 temp4 = (buf[24]<<24)+(buf[25]<<16)+(buf[26]<<8)+buf[27];
+                ui->lcdNumber2_1->display(temp3);   // Output Voltage
+                quint32 temp4 = (buf[25]<<24)+(buf[26]<<16)+(buf[27]<<8)+buf[28];
                 double temp5 = ((double) temp4)/1000;
-                ui->lcdNumber2_2->display(150.10);   // Output Current
-                ui->progressBar->setValue(0);
-                member.data()[1] = buf[44];     // Power module Status
+                ui->lcdNumber2_2->display(temp5);   // Output Current
+                int temp6 = (buf[29]<<8) + buf[30];
+                double temp7 = ((double)temp6)/10;
+                ui->lcdNumber2_3->display(temp7);   // AB Voltage
+                temp6 = (buf[31]<<8) + buf[32];
+                temp7 = ((double)temp6)/10;
+                ui->lcdNumber2_4->display(temp7);   // BC Voltage
+                temp6 = (buf[33]<<8) + buf[34];
+                temp7 = ((double)temp6)/10;
+                ui->lcdNumber2_5->display(temp7);   // CA Voltage
+                ui->progressBar->setValue(buf[35]);     //  BMS SOC
+                if(buf[45] == 0x06)
+                    ui->label2_12->setText(QString::fromLocal8Bit("Loading"));
+                if(buf[45 == 0x05])
+                    ui->label2_12->setText(QString::fromLocal8Bit("Free"));
+                member.data()[1] = buf[45];     // Power module Status
+            }
+            // show Ki/Kii
+            if (arraycmp(kmii, buf, sizeof (kmii), sizeof (buf)) == 1)
+            {
+                if (buf[size-4] == 0x00)
+                    ui->label1_2->setText(QString::fromLocal8Bit("弹开"));
+                else {
+                    if (buf[size-4] == 0x01)
+                         ui->label1_2->setText(QString::fromLocal8Bit("吸合"));
+                }
             }
             // show work mode
             if (arraycmp(mode, buf, sizeof (mode), sizeof (buf)) == 1)
             {
                 if (buf[size-4] == 0x00)
+                {
                     ui->label1_1->setText(QString::fromLocal8Bit("自动"));
+                    ui->pushButton2_6->setEnabled(true);
+                    ui->pushButton2_5->setEnabled(true);
+                }
                 else {
                     if (buf[size-4] == 0x01)
                     {
                         ui->label1_1->setText(QString::fromLocal8Bit("手动"));
-                        member.data()[0] = 55; // Working mode
+                        member.data()[0] = 0x55; // Working mode
                         ui->pushButton2_6->setEnabled(false);
                         ui->pushButton2_5->setEnabled(false);
                     }
@@ -206,9 +262,10 @@ void Widget::processPendingDatagrams(QUdpSocket *Socket)
             // show work status
             if (buf[0] == 0x36)
             {
-                ui->label1_8->setText(tr("%1 °C").arg(buf[52]));
-                ui->label1_9->setText(tr("%1 °C").arg(buf[53]));
-                ui->label1_10->setText(tr("%1 °C").arg(buf[54]));   //ui->label1_10->setStyleSheet("color:red;");
+//                ui->label1_10->setText(tr("%1 °C").arg(buf[54]));   //ui->label1_10->setStyleSheet("color:red;");
+                ui->lcdNumber1_4->display(buf[52]);
+                ui->lcdNumber1_5->display(buf[53]);
+                ui->lcdNumber1_6->display(buf[54]);
 
             }
         }
@@ -287,12 +344,18 @@ void Widget::on_radioButton2_3_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x06, 0x00};
     emit sendDatagram(buf,Len2,leftport,mSocket);
+    if(ui->checkBox1_2->isChecked())
+        buf[5] = 0x02;
+    emit sendDatagram(buf,Len2,leftport,mSocket);
     qDebug() << "K3/K4 turn off";
 }
 
 void Widget::on_radioButton2_4_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x06, 0x01};
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    if(ui->checkBox1_2->isChecked())
+        buf[5] = 0x02;
     emit sendDatagram(buf,Len2,leftport,mSocket);
     qDebug() << "K3/K4 turn on";
 }
@@ -320,7 +383,9 @@ void Widget::on_pushButton2_1_clicked()
         QMessageBox::information(this,"Warning","Please Input Voltage and Current");
         return;
     }
-    unsigned char buf[14] = {0x02, 0x00, 0x0b, 0xa0, 0x03, 0x00}; // no define element set to 0x00
+    unsigned char buf[14] = {0x02, 0x00, 0x0b, 0xa0, 0x03, 0x00}; // no define element default set to 0x00
+    if(ui->checkBox1_1->isChecked())
+        buf[4] = 0x1d;
     QString output = ui->lineEdit2_1->text();
     QByteArray ba = processQString(output,1000);
     int val = 9;
@@ -337,10 +402,10 @@ void Widget::on_pushButton2_1_clicked()
         buf[val] = ba.data()[i];
         val = val -1;
     }
-    if(member.at(1) == 0x01)
+    if(member.at(1) == 0x06)        // member.at(1) == 0x06 Power Modele is working
         buf[5] = 0x01;
     emit sendDatagram(buf,15,leftport,mSocket);
-    if(member.at(1) == 0x01)
+    if(member.at(1) == 0x05)        // member.at(1) == 0x06 Power Modele is free
     {
         ui->pushButton2_2->setEnabled(true);
     }
@@ -379,8 +444,10 @@ QByteArray Widget::processQString(QString item, int k) // or can try str.toLatin
 void Widget::on_pushButton2_2_clicked()
 {
     unsigned char buf[14] = {0x02, 0x00, 0x0b, 0xa0, 0x03, 0x02};
+    if(ui->checkBox1_1->isChecked())
+        buf[4] = 0x1d;
     emit sendDatagram(buf,15,leftport,mSocket);
-    if(member.at(1) == 0x00)
+    if(member.at(1) == 0x05)
         ui->pushButton2_2->setEnabled(false);
     qDebug() << "Stopping output";
 }
@@ -422,6 +489,7 @@ void Widget::copySeedSlot()
     if(item == nullptr)
         return;
     QString str = ui->listWidget->currentItem()->text();
+    str = str.right(str.size()-11);
     QApplication::clipboard()->setText(str);
 }
 // Automatic charging mode､
@@ -547,4 +615,30 @@ void Widget::on_pushButton2_6_clicked()
         ui->pushButton2_5->setEnabled(true);
     }
     qDebug() << "Stopping Charging";
+}
+
+void Widget::on_radioButton2_11_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x05, 0x00};
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    if(ui->checkBox1_3->isChecked())
+        emit sendDatagram(buf,Len2,rightport,sSocket);
+    ui->label2_10->setText(QString::fromLocal8Bit("Close_inValid"));
+    qDebug() << "Fans turn off";
+}
+
+void Widget::on_radioButton2_12_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x04, 0x05, 0x01};
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    if(ui->checkBox1_3->isChecked())
+        emit sendDatagram(buf,Len2,rightport,sSocket);
+    ui->label2_10->setText(QString::fromLocal8Bit("Open_inValid"));
+    qDebug() << "Fans turn on";
+}
+
+void Widget::on_comboBox_currentIndexChanged(const QString &arg1)
+{
+    stripAdress = ui->comboBox->currentData().toString();
+    qDebug() << "mac and ip" << arg1;
 }

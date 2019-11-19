@@ -74,6 +74,8 @@ private slots:
 
     void copySeedSlot();
 
+    void broadcastmessage();
+
     void on_pushButton2_5_clicked();
 
     void on_radioButton2_7_clicked();
@@ -86,17 +88,25 @@ private slots:
 
     void on_pushButton2_6_clicked();
 
+    void on_radioButton2_11_clicked();
+
+    void on_radioButton2_12_clicked();
+
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
     QUdpSocket *sSocket;
+    QUdpSocket *bSocket;
     QTimer *myTimer;
     short Len1 = 7;
     short Len2 = 8;
     quint16 leftport = 2001;
     quint16 rightport = 2002;
-    QString stripAdress = "192.168.1.60";
+    QString stripAdress;
     QByteArray member = QByteArray::fromHex("000000");  // at.(0): working mode //at.(1):Power module Status // at.(2): Device charging Status
+    QMap<QString, QString> Device_Node;
 };
 
 #endif // WIDGET_H
