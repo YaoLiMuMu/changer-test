@@ -27,15 +27,21 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        widget.cpp
+        widget.cpp \
+    helpform.cpp
 
 HEADERS += \
-        widget.h
+        widget.h \
+    helpform.h
 
 FORMS += \
-        widget.ui
+        widget.ui \
+    helpform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    icons.qrc

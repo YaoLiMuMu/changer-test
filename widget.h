@@ -94,6 +94,22 @@ private slots:
 
     void on_comboBox_currentIndexChanged(const QString &arg1);
 
+    void on_pushButton_2_clicked();
+
+    void on_pushButton2_8_clicked();
+
+    void on_pushButton2_7_clicked();
+
+    void on_horizontalSlider1_2_valueChanged(int value);
+
+    void on_horizontalSlider1_1_valueChanged(int value);
+
+    void on_horizontalSlider1_3_valueChanged(int value);
+
+    void on_horizontalSlider1_4_valueChanged(int value);
+
+    void on_horizontalSlider1_6_valueChanged(int value);
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
@@ -105,7 +121,12 @@ private:
     quint16 leftport = 2001;
     quint16 rightport = 2002;
     QString stripAdress;
-    QByteArray member = QByteArray::fromHex("000000");  // at.(0): working mode //at.(1):Power module Status // at.(2): Device charging Status
+    QByteArray member = QByteArray::fromHex("0000000000");
+    // at.(0): working mode
+    //at.(1):Power module Status
+    //at.(2): Device charging Status
+    //at.(3): Device network connect status
+    //at.(4): Broadcast Flag
     QMap<QString, QString> Device_Node;
 };
 
