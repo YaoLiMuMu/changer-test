@@ -2001,7 +2001,7 @@ QSlider::handle:horizontal {
                              </property>
                              <property name="maximumSize">
                               <size>
-                               <width>70</width>
+                               <width>73</width>
                                <height>16777215</height>
                               </size>
                              </property>
@@ -2020,7 +2020,7 @@ QSlider::handle:horizontal {
                              </property>
                              <property name="maximumSize">
                               <size>
-                               <width>70</width>
+                               <width>73</width>
                                <height>16777215</height>
                               </size>
                              </property>

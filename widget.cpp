@@ -186,6 +186,8 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
         array.resize(rSocket->bytesAvailable());    // or array.resize(Socket->pendingDatagramSize());
         int size = array.size();
         rSocket->readDatagram(array.data(),array.size(),&address,&port);
+        if(array.isEmpty())
+            return;
         ui->listWidget->addItem(timeblock + "   " +array.toHex()); //  or ui->listWidget->insertItem(1, array);
         qDebug() << "port " << port << ": " << array.toHex();
         char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
