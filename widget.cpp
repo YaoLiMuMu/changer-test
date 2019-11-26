@@ -49,7 +49,7 @@ Widget::Widget(QWidget *parent) :
     connect(myTimer, SIGNAL(timeout()), this, SLOT(periodMessage()));
     myTimer->start(1000);
     ui->dateTimeEdit->setReadOnly(true);    // set datetimeEdit component readonly;
-    setWindowTitle(QString::fromLocal8Bit("NEBULA CHANGER, Clicking F1 for Help"));
+    setWindowTitle(QString::fromUtf8("NEBULA CHANGER, Clicking F1 for Help"));
     setWindowIcon(QIcon(":/sokit.png"));
     helpform * h = new helpform;
 //    QRect rec = QGuiApplication::screenAt(this->pos())->geometry();
@@ -108,14 +108,14 @@ void Widget::broadcastmessage()
     quint16 port;
     bSocket->readDatagram(array.data(),array.size(),&recvaddress,&port);
 //    QByteArray array = QByteArray::fromHex("4e6562756c615f4368617267696e6733c0a8013cac54c3a1e23c");
-    quint8 val1 = array.at(16);
-    quint8 val2 = array.at(17);
-    quint8 val3 = array.at(18);
-    quint8 val4 = array.at(19);
+    quint8 val1 = array.data()[16];
+    quint8 val2 = array.data()[17];
+    quint8 val3 = array.data()[18];
+    quint8 val4 = array.data()[19];
     QString Ipstr = QString::asprintf("%d.%d.%d.%d" ,val1,val2,val3,val4);
     QString macstr = (array.mid(20,10).toHex());
     QString string(array.remove(16,10));
-    if (Device_Node.contains(macstr))
+    if (Device_Node.contains(macstr) || macstr == "")
         return;
     Device_Node.insert(macstr, Ipstr);
     foreach(const QString &str, Device_Node.keys())
@@ -206,18 +206,18 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
                 switch (buf[size-4])
                 {
                 case 0:
-                    ui->label1_1->setText(QString::fromLocal8Bit("自动"));
+                    ui->label1_1->setText(QString::fromUtf8("自动"));
                     ui->pushButton2_6->setEnabled(true);
                     ui->pushButton2_5->setEnabled(true);
                     break;
                 case 1:
-                    ui->label1_1->setText(QString::fromLocal8Bit("手动"));
+                    ui->label1_1->setText(QString::fromUtf8("手动"));
                     member.data()[0] = 0x55; // Working mode
                     ui->pushButton2_6->setEnabled(false);
                     ui->pushButton2_5->setEnabled(false);
                     break;
                 default:
-                    ui->label1_1->setText(QString::fromLocal8Bit("F "));
+                    ui->label1_1->setText(QString::fromUtf8("F "));
                     member.data()[3] = 0x55;
                     qDebug() << "Network is not connnected";
                     return;
@@ -230,31 +230,31 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
                 {
                     if (buf[size-4] == 0x00)
                     {
-                        ui->label1->setText(QString::fromLocal8Bit("锁定"));
+                        ui->label1->setText(QString::fromUtf8("锁定"));
                     }
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label1->setText(QString::fromLocal8Bit("解锁"));
+                             ui->label1->setText(QString::fromUtf8("解锁"));
                     }
                 }
                 // show K1/K2
                 if (arraycmp(km1, buf, sizeof (km1), sizeof (buf)) == 1)
                 {
                     if (buf[size-4] == 0x00)
-                        ui->label2_1->setText(QString::fromLocal8Bit("弹开"));
+                        ui->label2_1->setText(QString::fromUtf8("弹开"));
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label2_1->setText(QString::fromLocal8Bit("吸合"));
+                             ui->label2_1->setText(QString::fromUtf8("吸合"));
                     }
                 }
                 // show K3/K4
                 if (arraycmp(km2, buf, sizeof (km2), sizeof (buf)) == 1)
                 {
                     if (buf[size-4] == 0x00)
-                        ui->label2_2->setText(QString::fromLocal8Bit("弹开"));
+                        ui->label2_2->setText(QString::fromUtf8("弹开"));
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label2_2->setText(QString::fromLocal8Bit("吸合"));
+                             ui->label2_2->setText(QString::fromUtf8("吸合"));
                     }
                 }
                 // system temprature
@@ -271,9 +271,9 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
                     ui->lcdNumber1_2->display(buf[53]);     // Power module #2 temperature
                     ui->lcdNumber1_3->display(buf[54]);     // Power module #3 temperature
                     if (buf[10] == 0x00)
-                        ui->label2_3->setText(QString::fromLocal8Bit("Free"));  // Device Charing Status
+                        ui->label2_3->setText(QString::fromUtf8("Free"));  // Device Charing Status
                     else if (buf[11] == 0x01) {
-                        ui->label2_3->setText(QString::fromLocal8Bit("Loading"));
+                        ui->label2_3->setText(QString::fromUtf8("Loading"));
                         member.data()[2] = 0x55;
                     }
                     quint32 temp1 = (buf[13]<<24)+(buf[14]<<16)+(buf[15]<<8)+buf[16];
@@ -296,19 +296,19 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
                     ui->lcdNumber2_5->display(temp7);   // CA Voltage
                     ui->progressBar->setValue(buf[35]);     //  BMS SOC
                     if(buf[45] == 0x06)
-                        ui->label2_12->setText(QString::fromLocal8Bit("Loading"));
+                        ui->label2_12->setText(QString::fromUtf8("Loading"));
                     if(buf[45 == 0x05])
-                        ui->label2_12->setText(QString::fromLocal8Bit("Free"));
+                        ui->label2_12->setText(QString::fromUtf8("Free"));
                     member.data()[1] = buf[45];     // Power module Status
                 }
                 // show Ki/Kii
                 if (arraycmp(kmii, buf, sizeof (kmii), sizeof (buf)) == 1)
                 {
                     if (buf[size-4] == 0x00)
-                        ui->label1_2->setText(QString::fromLocal8Bit("弹开"));
+                        ui->label1_2->setText(QString::fromUtf8("弹开"));
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label1_2->setText(QString::fromLocal8Bit("吸合"));
+                             ui->label1_2->setText(QString::fromUtf8("吸合"));
                     }
                 }
                 if (buf[0] == 0x10 && buf[8] == 0x0d)
@@ -332,20 +332,20 @@ void Widget::processPendingDatagrams(QUdpSocket * rSocket)
                 if (arraycmp(eleLock, buf, sizeof (eleLock), sizeof (buf)) == 1)
                 {
                     if (buf[size-4] == 0x00)
-                        ui->label3_1->setText(QString::fromLocal8Bit("锁定"));
+                        ui->label3_1->setText(QString::fromUtf8("锁定"));
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label3_1->setText(QString::fromLocal8Bit("解锁"));
+                             ui->label3_1->setText(QString::fromUtf8("解锁"));
                     }
                 }
                 // show K1/K2
                 if (arraycmp(km1, buf, sizeof (km1), sizeof (buf)) == 1)
                 {
                     if (buf[size-4] == 0x00)
-                        ui->label3_2->setText(QString::fromLocal8Bit("弹开"));
+                        ui->label3_2->setText(QString::fromUtf8("弹开"));
                     else {
                         if (buf[size-4] == 0x01)
-                             ui->label3_2->setText(QString::fromLocal8Bit("吸合"));
+                             ui->label3_2->setText(QString::fromUtf8("吸合"));
                     }
                 }
                 // show work status
@@ -684,22 +684,22 @@ void Widget::on_pushButton2_5_clicked()
 
 void Widget::on_radioButton2_7_clicked()
 {
-    ui->label2_11->setText(QString::fromLocal8Bit("秒 / s "));
+    ui->label2_11->setText(QString::fromUtf8("秒 / s "));
 }
 
 void Widget::on_radioButton2_8_clicked()
 {
-    ui->label2_11->setText(QString::fromLocal8Bit("元/Yuan"));
+    ui->label2_11->setText(QString::fromUtf8("元/Yuan"));
 }
 
 void Widget::on_radioButton2_6_clicked()
 {
-    ui->label2_11->setText(QString::fromLocal8Bit("KW·h/ ° "));
+    ui->label2_11->setText(QString::fromUtf8("KW·h/ ° "));
 }
 
 void Widget::on_radioButton2_5_clicked()
 {
-    ui->label2_11->setText(QString::fromLocal8Bit("    "));
+    ui->label2_11->setText(QString::fromUtf8("    "));
 }
 // Stop Automatic mode charging
 void Widget::on_pushButton2_6_clicked()
@@ -720,7 +720,7 @@ void Widget::on_radioButton2_11_clicked()
     emit sendDatagram(buf,Len2,leftport,mSocket);
     if(ui->checkBox1_3->isChecked())
         emit sendDatagram(buf,Len2,rightport,sSocket);
-    ui->label2_10->setText(QString::fromLocal8Bit("Close_inValid"));
+    ui->label2_10->setText(QString::fromUtf8("Close_inValid"));
     qDebug() << "Fans turn off";
 }
 
@@ -730,7 +730,7 @@ void Widget::on_radioButton2_12_clicked()
     emit sendDatagram(buf,Len2,leftport,mSocket);
     if(ui->checkBox1_3->isChecked())
         emit sendDatagram(buf,Len2,rightport,sSocket);
-    ui->label2_10->setText(QString::fromLocal8Bit("Open_inValid"));
+    ui->label2_10->setText(QString::fromUtf8("Open_inValid"));
     qDebug() << "Fans turn on";
 }
 
