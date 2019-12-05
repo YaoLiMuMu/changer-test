@@ -7,6 +7,8 @@
 #include <QDateTime>
 #include <QDataStream>
 #include <QFile>
+#include <QThread>
+#include <dataprocessor.h>
 
 namespace Ui {
 class Widget;
@@ -21,6 +23,9 @@ public:
     ~Widget();
 
 private slots:
+    void UpdateUI(Msg msg);
+
+    void disconnect();
 
     void on_radioButton3_clicked();
 
@@ -36,13 +41,7 @@ private slots:
 
     bool arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b);
 
-    void read_L();
-
-    void read_R();
-
     void sendDatagram(unsigned char buf[], short Length, quint16 port, QUdpSocket *Socket);
-
-    void processPendingDatagrams(QUdpSocket *Socket);
 
     QByteArray processQString(QString item, int k);
 
@@ -110,24 +109,29 @@ private slots:
 
     void on_horizontalSlider1_6_valueChanged(int value);
 
+    void on_pushButton_3_clicked();
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
     QUdpSocket *sSocket;
     QUdpSocket *bSocket;
+    DataProcessor *dataprocess;
+    QThread * thread;
     QTimer *myTimer;
     short Len1 = 7;
     short Len2 = 8;
     quint16 leftport = 2001;
     quint16 rightport = 2002;
     QString stripAdress;
-    QByteArray member = QByteArray::fromHex("0000000000");
-    // at.(0): working mode
-    //at.(1):Power module Status
+    QMap<QString, QString> Device_Node;
+    quint8 timeback = 1;
+    bool member[5] ={0,0,0,0,0};
+    //at.(0): working mode
+    //at.(1): Power module Status
     //at.(2): Device charging Status
     //at.(3): Device network connect status
     //at.(4): Broadcast Flag
-    QMap<QString, QString> Device_Node;
 };
 
 #endif // WIDGET_H

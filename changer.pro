@@ -28,11 +28,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         widget.cpp \
-    helpform.cpp
+    helpform.cpp \
+    dataprocessor.cpp
 
 HEADERS += \
         widget.h \
-    helpform.h
+    helpform.h \
+    dataprocessor.h
 
 FORMS += \
         widget.ui \
