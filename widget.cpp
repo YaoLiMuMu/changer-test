@@ -26,6 +26,10 @@ Widget::Widget(QWidget *parent) :
     mSocket = new QUdpSocket();     // left Socket
     sSocket = new QUdpSocket();     // right Socket
     bSocket = new QUdpSocket();     // Broadcast Socket
+    vSocket = new QUdpSocket();     // read version Socket
+    mSocket->bind(leftport, QUdpSocket::ShareAddress);
+    sSocket->bind(rightport, QUdpSocket::ShareAddress);
+    vSocket->bind(2000, QUdpSocket::ShareAddress);
     bSocket->bind(QHostAddress::AnyIPv4,1021);      // Broadcast
     connect(ui->horizontalSlider1_1, SIGNAL(valueChanged(int)), ui->spinBox1_1, SLOT(setValue(int)));
     connect(ui->spinBox1_1, SIGNAL(valueChanged(int)), ui->horizontalSlider1_1, SLOT(setValue(int)));
@@ -39,6 +43,9 @@ Widget::Widget(QWidget *parent) :
     connect(ui->spinBox1_5, SIGNAL(valueChanged(int)), ui->horizontalSlider1_5, SLOT(setValue(int)));
     connect(ui->horizontalSlider1_6, SIGNAL(valueChanged(int)), ui->spinBox1_6, SLOT(setValue(int)));
     connect(ui->spinBox1_6, SIGNAL(valueChanged(int)), ui->horizontalSlider1_6, SLOT(setValue(int)));
+//    connect(ui->horizontalSlider1_7, SIGNAL(valueChanged(int)), ui->spinBox1_7, SLOT(setValue(int)));
+//    connect(ui->spinBox1_7, SIGNAL(valueChanged(int)), ui->horizontalSlider1_7, SLOT(setValue(int)));
+//    ui->spinBox1_7->setValue(6);       // set module number
     ui->spinBox1_6->setValue(100);      // module temperature limit
     ui->spinBox1_5->setValue(380);      // rated voltage setting
     ui->spinBox1_4->setValue(100);      // pole temperature limit
@@ -124,6 +131,36 @@ void Widget::UpdateUI(Msg msg)
         ui->lcdNumber2_7->display(msg.lcdnum.value("lcdNumber2_7"));
         ui->lcdNumber2_8->display(msg.lcdnum.value("lcdNumber2_8"));
     }
+    if(msg.maplist.contains(("label1_19")))
+    {
+        ui->label1_19->setText(msg.maplist.value("label1_19"));
+        return;
+    }
+    if(msg.maplist.contains(("label1_20")))
+    {
+        ui->label1_20->setText(msg.maplist.value("label1_20"));
+        return;
+    }
+    if(msg.maplist.contains(("label1_22")))
+    {
+        ui->label1_22->setText(msg.maplist.value("label1_22"));
+        return;
+    }
+    if(msg.maplist.contains(("label2_22")))
+    {
+        ui->label2_22->setText(msg.maplist.value("label2_22"));
+        return;
+    }
+    if(msg.maplist.contains(("label2_21")))
+    {
+        ui->label2_21->setText(msg.maplist.value("label2_21"));
+        return;
+    }
+    if(msg.maplist.contains(("label1_6")))
+    {
+        ui->label1_6->setText(msg.maplist.value("label1_6"));
+        return;
+    }
     if(msg.maplist.contains("label2_3"))
     {
         ui->lcdNumber1_1->display(msg.lcdnum.value("lcdNumber1_1"));
@@ -140,7 +177,16 @@ void Widget::UpdateUI(Msg msg)
         ui->label2_12->setText(msg.maplist.value("label2_12"));
         ui->progressBar->setValue(msg.lcdnum.value("progressBar"));
         if(msg.Flag.contains("module_status"))
+        {
             member[1] = msg.Flag.value("module_status");
+            ui->horizontalSlider1_1->setEnabled(!member[1]);
+            ui->horizontalSlider1_2->setEnabled(!member[1]);
+            ui->horizontalSlider1_3->setEnabled(!member[1]);
+            ui->horizontalSlider1_4->setEnabled(!member[1]);
+            ui->horizontalSlider1_5->setEnabled(!member[1]);
+            ui->horizontalSlider1_6->setEnabled(!member[1]);
+            ui->horizontalSlider1_7->setEnabled(!member[1]);
+        }
         if(msg.Flag.contains("charging_status"))
             member[2] = msg.Flag.value("charging_status");
         return;
@@ -166,9 +212,9 @@ void Widget::UpdateUI(Msg msg)
     }
     if(msg.maplist.contains("listWidget2"))
     {
-        qDebug() << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
         ui->listWidget2->clear();
         ui->listWidget2->addItems(msg.maplist.values("listWidget2"));
+        qDebug() << "Failure reminder";
     }
 }
 
@@ -243,28 +289,38 @@ static unsigned char buf7[] = {0x02, 0x00, 0x03, 0xa0, 0x20, 0x00}; // read syst
 static unsigned char buf9[] = {0x02, 0x00, 0x03, 0xa0, 0x0b, 0x00}; // show insulation detection
 static uchar buf10[] = {0x02, 0x00, 0x03, 0xa0, 0x06, 0x00}; // read IoT code
 static uchar buf11[] = {0x02, 0x00, 0x03, 0xa0, 0x34, 0x00}; // read device charge error message
+static uchar buf12[38] = {0x02, 0x00, 0x23, 0x99, 0x99}; // read IoT code
+static uchar buf13[] = {0x02, 0x00, 0x03, 0xa0, 0x28, 0x00}; // read charging number log
+static uchar buf14[10] = {0x02, 0x00, 0x07, 0xa0, 0x2a, 0x00};// read device ID
+static uchar buf15[] = {0x02, 0x00, 0x03, 0xa0, 0x21, 0x00};    // read Access Switch status
+static uchar buf16[] = {0x02, 0x00, 0x03, 0xa0, 0x22, 0x00};    // read Emergency Stop Switch
 void Widget::periodMessage()
 {
     if(member[4])
     {
-        emit sendDatagram(buf8,Len1,leftport,mSocket);
-        emit sendDatagram(buf1,Len1,leftport,mSocket);
-        emit sendDatagram(buf1,Len1,rightport,sSocket);
-        emit sendDatagram(buf2,Len1,leftport,mSocket);
-        emit sendDatagram(buf2,Len1,rightport,sSocket);
-        emit sendDatagram(buf3,Len2,leftport,mSocket);
-        emit sendDatagram(buf3,Len2,rightport,sSocket);
-        emit sendDatagram(buf4,Len1,leftport,mSocket);
-        emit sendDatagram(buf4,Len1,rightport,sSocket);
-        emit sendDatagram(buf5,Len1,leftport,mSocket);
-        emit sendDatagram(buf6,Len1,leftport,mSocket);
-        emit sendDatagram(buf6,Len1,rightport,sSocket);
-        emit sendDatagram(buf7,Len1,leftport,mSocket);
-        emit sendDatagram(buf7,Len1,rightport,sSocket);
-        emit sendDatagram(buf9,Len1,leftport,mSocket);
-        emit sendDatagram(buf9,Len1,rightport,sSocket);
-        emit sendDatagram(buf10,Len1,leftport,sSocket);
-        emit sendDatagram(buf11,Len1,leftport,sSocket);
+//        emit sendDatagram(buf8,Len1,leftport,mSocket);
+//        emit sendDatagram(buf1,Len1,leftport,mSocket);
+//        emit sendDatagram(buf1,Len1,rightport,sSocket);
+//        emit sendDatagram(buf2,Len1,leftport,mSocket);
+//        emit sendDatagram(buf2,Len1,rightport,sSocket);
+//        emit sendDatagram(buf3,Len2,leftport,mSocket);
+//        emit sendDatagram(buf3,Len2,rightport,sSocket);
+//        emit sendDatagram(buf4,Len1,leftport,mSocket);
+//        emit sendDatagram(buf4,Len1,rightport,sSocket);
+//        emit sendDatagram(buf5,Len1,leftport,mSocket);
+//        emit sendDatagram(buf6,Len1,leftport,mSocket);
+//        emit sendDatagram(buf6,Len1,rightport,sSocket);
+//        emit sendDatagram(buf7,Len1,leftport,mSocket);
+//        emit sendDatagram(buf7,Len1,rightport,sSocket);
+//        emit sendDatagram(buf9,Len1,leftport,mSocket);
+//        emit sendDatagram(buf9,Len1,rightport,sSocket);
+//        emit sendDatagram(buf10,Len1,leftport,mSocket);
+//        emit sendDatagram(buf11,Len1,leftport,mSocket);
+//        emit sendDatagram(buf12,39,2000,vSocket);
+//        emit sendDatagram(buf13,Len1,leftport,mSocket);
+//        emit sendDatagram(buf14,11,leftport,mSocket);
+//        emit sendDatagram(buf15,Len1,leftport,mSocket);
+        emit sendDatagram(buf16,Len1,leftport,mSocket);
     }
 }
 
@@ -726,4 +782,28 @@ void Widget::on_pushButton_3_clicked()
 {
     uchar buf[12] = {0x02, 0x00, 0x09, 0xa0, 0x33};
 
+}
+
+void Widget::on_radioButton1_5_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x33, 0x00, 0x00};
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    qDebug() << "Breaker turn 0ff";
+}
+
+void Widget::on_radioButton1_6_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x04, 0xa0, 0x33, 0x00, 0x01};
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    qDebug() << "Breaker turn on";
+}
+
+void Widget::on_horizontalSlider1_7_valueChanged(int value)
+{
+    uchar buf[12] = {0x02, 0x00, 0x04, 0xa0, 0x02};
+    buf[6] = uchar(value);
+    buf[8] = uchar(ui->spinBox1_4->value());
+    buf[10] = buf[8];
+    emit sendDatagram(buf,Len2,leftport,mSocket);
+    qDebug() << "Power module temperature protection";
 }

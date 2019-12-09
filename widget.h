@@ -111,11 +111,18 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void on_radioButton1_5_clicked();
+
+    void on_radioButton1_6_clicked();
+
+    void on_horizontalSlider1_7_valueChanged(int value);
+
 private:
     Ui::Widget *ui;
     QUdpSocket *mSocket;
     QUdpSocket *sSocket;
     QUdpSocket *bSocket;
+    QUdpSocket *vSocket;
     DataProcessor *dataprocess;
     QThread * thread;
     QTimer *myTimer;
@@ -127,11 +134,11 @@ private:
     QMap<QString, QString> Device_Node;
     quint8 timeback = 1;
     bool member[5] ={0,0,0,0,0};
-    //at.(0): working mode
-    //at.(1): Power module Status
-    //at.(2): Device charging Status
-    //at.(3): Device network connect status
-    //at.(4): Broadcast Flag
+    //member[0]: working mode
+    //member[1]: Power module Status
+    //member[2]: Device charging Status
+    //member[3]: Device network connect status
+    //member[4]: Broadcast Flag
 };
 
 #endif // WIDGET_H

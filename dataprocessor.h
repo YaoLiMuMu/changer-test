@@ -22,6 +22,7 @@ public:
     explicit DataProcessor(QObject *parent = nullptr);
     QUdpSocket *lSocket;
     QUdpSocket *rSocket;
+    QUdpSocket *vSocket;
 
 signals:
     void Send2UI(Msg msg);
@@ -30,6 +31,7 @@ public slots:
     void ReceiveDatagrams();
     void LprocessDatagrams();
     void RprocessDatagrams();
+    void VprocessDatagrams();
     bool arraycmp(unsigned char arrayA[], unsigned char arrayB[], unsigned long a, unsigned long b);
 
 private:
