@@ -27,10 +27,6 @@ private slots:
 
     void disconnect();
 
-    void on_radioButton3_clicked();
-
-    void on_radioButton4_clicked();
-
     void on_radioButton1_clicked();
 
     void on_radioButton2_clicked();
@@ -116,6 +112,10 @@ private slots:
     void on_radioButton1_6_clicked();
 
     void on_horizontalSlider1_7_valueChanged(int value);
+
+    void on_radioButton3_1_clicked();
+
+    void on_radioButton3_2_clicked();
 
 private:
     Ui::Widget *ui;

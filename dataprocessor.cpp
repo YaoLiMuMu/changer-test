@@ -581,190 +581,53 @@ void DataProcessor::LprocessDatagrams()
 
 void DataProcessor::RprocessDatagrams()
 {
-//    while (sSocket->hasPendingDatagrams())
-//    {
-//        QByteArray array;
-//        QHostAddress address;
-//        quint16 port;
-//        QDateTime time = QDateTime::currentDateTime();
-//        QString timeblock = time.toString("hh:mm:ss");    // or "yyyy-MM-dd hh:mm:ss dddd"
-//        array.resize(sSocket->bytesAvailable());    // or array.resize(Socket->pendingDatagramSize());
-//        int size = array.size();
-//        sSocket->readDatagram(array.data(),array.size(),&address,&port);
-//        if(array.isEmpty())
-//            return;
-//        ui->listWidget->addItem(timeblock + "   " +array.toHex()); //  or ui->listWidget->insertItem(1, array);
-//        qDebug() << "port " << port << ": " << array.toHex();
-//        char sum = 0x00;    // cant use unsigned char because QBytearray[] is char
-//        for (int i = 0; i < (size-1); ++i) {
-//            sum+=array.at(i);
-//        }   // sum cleck
-//        if (sum == array.at(size-1))
-//        {
-//            array.remove(size-1,1); // truncate sumcheck byte
-//            array.remove(0,2);  //  truncate 0x0200
-//            unsigned char buf[size-3];
-//            memcpy(buf,array,size-3);
-//            // show work mode
-//            if (arraycmp(mode, buf, sizeof (mode), sizeof (buf)) == 1)
-//            {
-//                switch (buf[size-4])
-//                {
-//                case 0:
-//                    ui->label1_1->setText(QString::fromUtf8("自动"));
-//                    ui->pushButton2_6->setEnabled(true);
-//                    ui->pushButton2_5->setEnabled(true);
-//                    break;
-//                case 1:
-//                    ui->label1_1->setText(QString::fromUtf8("手动"));
-////                    member.data()[0] = 0x55; // Working mode
-//                    ui->pushButton2_6->setEnabled(false);
-//                    ui->pushButton2_5->setEnabled(false);
-//                    break;
-//                default:
-//                    ui->label1_1->setText(QString::fromUtf8("F "));
-////                    member.data()[3] = 0x55;
-//                    qDebug() << "Network is not connnected";
-//                    return;
-//                }
-//            }
-//            if (port == 2001)
-//            {
-//                // show eletronic locks
-//                if (arraycmp(eleLock, buf, sizeof (eleLock), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                    {
-//                        ui->label1->setText(QString::fromUtf8("锁定"));
-//                    }
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label1->setText(QString::fromUtf8("解锁"));
-//                    }
-//                }
-//                // show K1/K2
-//                if (arraycmp(km1, buf, sizeof (km1), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                        ui->label2_1->setText(QString::fromUtf8("弹开"));
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label2_1->setText(QString::fromUtf8("吸合"));
-//                    }
-//                }
-//                // show K3/K4
-//                if (arraycmp(km2, buf, sizeof (km2), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                        ui->label2_2->setText(QString::fromUtf8("弹开"));
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label2_2->setText(QString::fromUtf8("吸合"));
-//                    }
-//                }
-//                // system temprature
-//                if (buf[8] == 0x20 && buf[0] == 0x0f)
-//                {
-//                    ui->lcdNumber1_7->display((buf[10]<<8)+buf[11]);     // Power module PT1000 temperature
-//                    ui->lcdNumber2_7->display((buf[12]<<8)+buf[13]);     // anode temperature
-//                    ui->lcdNumber2_8->display((buf[14]<<8)+buf[15]);     // cathode temperature
-//                }
-//                // show work status
-//                if (buf[0] == 0x36) // array start length byte!!
-//                {
-//                    ui->lcdNumber1_1->display(buf[52]);     // Power module #1 temperature
-//                    ui->lcdNumber1_2->display(buf[53]);     // Power module #2 temperature
-//                    ui->lcdNumber1_3->display(buf[54]);     // Power module #3 temperature
-//                    if (buf[10] == 0x00)
-//                        ui->label2_3->setText(QString::fromUtf8("Free"));  // Device Charing Status
-//                    else if (buf[11] == 0x01) {
-//                        ui->label2_3->setText(QString::fromUtf8("Loading"));
-////                        member.data()[2] = 0x55;
-//                    }
-//                    quint32 temp1 = (buf[13]<<24)+(buf[14]<<16)+(buf[15]<<8)+buf[16];
-//                    ui->label2_5->setText(tr("%1 V").arg(temp1));   // MBS Demand Voltage
-//                    // MBS Demand Current
-//                    quint32 temp2 = (buf[21]<<24)+(buf[22]<<16)+(buf[23]<<8)+buf[24];
-//                    double temp3 = ((double) temp2)/1000;
-//                    ui->lcdNumber2_1->display(temp3);   // Output Voltage
-//                    quint32 temp4 = (buf[25]<<24)+(buf[26]<<16)+(buf[27]<<8)+buf[28];
-//                    double temp5 = ((double) temp4)/1000;
-//                    ui->lcdNumber2_2->display(temp5);   // Output Current
-//                    int temp6 = (buf[29]<<8) + buf[30];
-//                    double temp7 = ((double)temp6)/10;
-//                    ui->lcdNumber2_3->display(temp7);   // AB Voltage
-//                    temp6 = (buf[31]<<8) + buf[32];
-//                    temp7 = ((double)temp6)/10;
-//                    ui->lcdNumber2_4->display(temp7);   // BC Voltage
-//                    temp6 = (buf[33]<<8) + buf[34];
-//                    temp7 = ((double)temp6)/10;
-//                    ui->lcdNumber2_5->display(temp7);   // CA Voltage
-//                    ui->progressBar->setValue(buf[35]);     //  BMS SOC
-//                    if(buf[45] == 0x06)
-//                        ui->label2_12->setText(QString::fromUtf8("Loading"));
-//                    if(buf[45 == 0x05])
-//                        ui->label2_12->setText(QString::fromUtf8("Free"));
-////                    member.data()[1] = buf[45];     // Power module Status
-//                }
-//                // show Ki/Kii
-//                if (arraycmp(kmii, buf, sizeof (kmii), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                        ui->label1_2->setText(QString::fromUtf8("弹开"));
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label1_2->setText(QString::fromUtf8("吸合"));
-//                    }
-//                }
-//                if (buf[0] == 0x10 && buf[8] == 0x0d)
-//                {
-//                    ui->dateTimeEdit->setDateTime(QDateTime::fromString(QString("%1-%2-%3 %4:%5:%6")
-//                                                                        .arg((buf[10]<<8)+buf[11])
-//                            .arg(buf[12]).arg(buf[13]).arg(buf[14]).arg(buf[15]).arg(buf[16]), "yyyy-MM-dd hh:mm:ss"));
-//                }
-//                if (buf[0] == 0x13 && buf[8] == 0x0b)
-//                {
-//                    ui->lcdNumber2_10->display((buf[10]<<8)+buf[11]);     // anode resistance
-//                    ui->lcdNumber2_11->display((buf[12]<<8)+buf[13]);     // cathode resistance
-//                    ui->lcdNumber2_9->display((double(buf[14]<<8)+buf[15])/10);      // measurng voltage
-//                    ui->lcdNumber2_12->display(double((buf[16]<<8)+buf[17])/10);     // anode insulation
-//                    ui->lcdNumber2_13->display(double((buf[18]<<8)+buf[19])/10);     // cathode insulation
-//                }
-//            }
-//            // right port
-//            else {
-//                // show eletronic locks
-//                if (arraycmp(eleLock, buf, sizeof (eleLock), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                        ui->label3_1->setText(QString::fromUtf8("锁定"));
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label3_1->setText(QString::fromUtf8("解锁"));
-//                    }
-//                }
-//                // show K1/K2
-//                if (arraycmp(km1, buf, sizeof (km1), sizeof (buf)) == 1)
-//                {
-//                    if (buf[size-4] == 0x00)
-//                        ui->label3_2->setText(QString::fromUtf8("弹开"));
-//                    else {
-//                        if (buf[size-4] == 0x01)
-//                             ui->label3_2->setText(QString::fromUtf8("吸合"));
-//                    }
-//                }
-//                // show work status
-//                if (buf[0] == 0x36)
-//                {
-//    //                ui->label1_10->setText(tr("%1 °C").arg(buf[54]));   //ui->label1_10->setStyleSheet("color:red;");
-//                    ui->lcdNumber1_4->display(buf[52]);
-//                    ui->lcdNumber1_5->display(buf[53]);
-//                    ui->lcdNumber1_6->display(buf[54]);
-
-//                }
-//            }
-//        }
-//    }
+    while (rSocket->hasPendingDatagrams())
+    {
+        emit Send2UI(msg);
+        msg.maplist.clear();
+        msg.lcdnum.clear();
+        msg.lcdisplay.clear();
+        msg.Flag.clear();
+        QByteArray array;
+        QHostAddress address;
+        quint16 port;
+        QDateTime nowtime = QDateTime::currentDateTime();
+        QString timeblock = nowtime.toString("hh:mm:ss");    // or "yyyy-MM-dd hh:mm:ss dddd"
+        int size;
+        size = int(rSocket->bytesAvailable());
+        array.resize(size);    // or array.resize(Socket->pendingDatagramSize());
+        rSocket->readDatagram(array.data(),size,&address,&port);
+        if(array.isEmpty())
+            continue;
+        msg.maplist.insert("listWidget",(timeblock + "   " +array.toHex())); //  or ui->listWidget->insertItem(1, array);
+        qDebug() << "port " << port << ": " << array.toHex();
+        char sum = 0x00;    // cant use unsigned char, because QBytearray[] is char
+        for (int i = 0; i < (size-1); ++i) {
+            sum+=array.at(i);
+        }   // sum cleck
+        if (sum == array.at(size-1))
+        {
+            array.remove(size-1,1); // truncate sumcheck byte
+            array.remove(0,2);  //  truncate 0x0200
+            unsigned char buf[size-3];
+            memcpy(buf,array,ulong(size-3));
+            // show eletronic locks
+            if (arraycmp(eleLock, buf, sizeof (eleLock), sizeof (buf)) == 1)
+            {
+                switch (buf[size-4])
+                {
+                case 0:
+                    msg.maplist.insert("label3_1",QString::fromUtf8("锁定"));
+                    continue;
+                case 1:
+                    msg.maplist.insert("label3_1",QString::fromUtf8("解锁"));
+                    continue;
+                default:
+                    msg.maplist.insert("label3_1", "F");
+                }
+            }
+        }
+    }
 }
 
 

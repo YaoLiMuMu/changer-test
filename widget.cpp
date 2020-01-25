@@ -115,6 +115,11 @@ void Widget::UpdateUI(Msg msg)
         ui->label1->setText(msg.maplist.value("label1"));
         return;
     }
+    if(msg.maplist.contains("label3_1"))
+    {
+        ui->label3_1->setText(msg.maplist.value("label3_1"));
+        return;
+    }
     if(msg.maplist.contains("label2_1"))
     {
         ui->label2_1->setText(msg.maplist.value("label2_1"));
@@ -223,28 +228,14 @@ void Widget::on_radioButton1_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x01};
     emit sendDatagram(buf,Len1,leftport, mSocket);
-    qDebug() << "Lock Messsage";
+    qDebug() << "UnLock Messsage";
 }
 
 void Widget::on_radioButton2_clicked()
 {
     unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x00};
     emit sendDatagram(buf,Len1,leftport, mSocket);
-    qDebug() << "Unlock Message";
-}
-
-void Widget::on_radioButton3_clicked()
-{
-    unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x01};
-    emit sendDatagram(buf,Len1,rightport, sSocket);
-    qDebug() << "Lock Messsage";
-}
-
-void Widget::on_radioButton4_clicked()
-{
-    unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x00};
-    emit sendDatagram(buf,Len1,rightport, sSocket);
-    qDebug() << "Unlock Message";
+    qDebug() << "lock Message";
 }
 
 // Broadcast
@@ -298,28 +289,28 @@ void Widget::periodMessage()
 {
     if(member[4])
     {
-//        emit sendDatagram(buf8,Len1,leftport,mSocket);
-//        emit sendDatagram(buf1,Len1,leftport,mSocket);
-//        emit sendDatagram(buf1,Len1,rightport,sSocket);
-//        emit sendDatagram(buf2,Len1,leftport,mSocket);
-//        emit sendDatagram(buf2,Len1,rightport,sSocket);
-//        emit sendDatagram(buf3,Len2,leftport,mSocket);
-//        emit sendDatagram(buf3,Len2,rightport,sSocket);
-//        emit sendDatagram(buf4,Len1,leftport,mSocket);
-//        emit sendDatagram(buf4,Len1,rightport,sSocket);
-//        emit sendDatagram(buf5,Len1,leftport,mSocket);
-//        emit sendDatagram(buf6,Len1,leftport,mSocket);
-//        emit sendDatagram(buf6,Len1,rightport,sSocket);
-//        emit sendDatagram(buf7,Len1,leftport,mSocket);
-//        emit sendDatagram(buf7,Len1,rightport,sSocket);
-//        emit sendDatagram(buf9,Len1,leftport,mSocket);
-//        emit sendDatagram(buf9,Len1,rightport,sSocket);
-//        emit sendDatagram(buf10,Len1,leftport,mSocket);
-//        emit sendDatagram(buf11,Len1,leftport,mSocket);
-//        emit sendDatagram(buf12,39,2000,vSocket);
-//        emit sendDatagram(buf13,Len1,leftport,mSocket);
-//        emit sendDatagram(buf14,11,leftport,mSocket);
-//        emit sendDatagram(buf15,Len1,leftport,mSocket);
+        emit sendDatagram(buf8,Len1,leftport,mSocket);
+        emit sendDatagram(buf1,Len1,leftport,mSocket);
+        emit sendDatagram(buf1,Len1,rightport,sSocket);
+        emit sendDatagram(buf2,Len1,leftport,mSocket);
+        emit sendDatagram(buf2,Len1,rightport,sSocket);
+        emit sendDatagram(buf3,Len2,leftport,mSocket);
+        emit sendDatagram(buf3,Len2,rightport,sSocket);
+        emit sendDatagram(buf4,Len1,leftport,mSocket);
+        emit sendDatagram(buf4,Len1,rightport,sSocket);
+        emit sendDatagram(buf5,Len1,leftport,mSocket);
+        emit sendDatagram(buf6,Len1,leftport,mSocket);
+        emit sendDatagram(buf6,Len1,rightport,sSocket);
+        emit sendDatagram(buf7,Len1,leftport,mSocket);
+        emit sendDatagram(buf7,Len1,rightport,sSocket);
+        emit sendDatagram(buf9,Len1,leftport,mSocket);
+        emit sendDatagram(buf9,Len1,rightport,sSocket);
+        emit sendDatagram(buf10,Len1,leftport,mSocket);
+        emit sendDatagram(buf11,Len1,leftport,mSocket);
+        emit sendDatagram(buf12,39,2000,vSocket);
+        emit sendDatagram(buf13,Len1,leftport,mSocket);
+        emit sendDatagram(buf14,11,leftport,mSocket);
+        emit sendDatagram(buf15,Len1,leftport,mSocket);
         emit sendDatagram(buf16,Len1,leftport,mSocket);
     }
 }
@@ -806,4 +797,18 @@ void Widget::on_horizontalSlider1_7_valueChanged(int value)
     buf[10] = buf[8];
     emit sendDatagram(buf,Len2,leftport,mSocket);
     qDebug() << "Power module temperature protection";
+}
+
+void Widget::on_radioButton3_1_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x01};
+    emit sendDatagram(buf,Len1,rightport, sSocket);
+    qDebug() << "Unlock Message";
+}
+
+void Widget::on_radioButton3_2_clicked()
+{
+    unsigned char buf[] = {0x02, 0x00, 0x03, 0xa0, 0x08, 0x00};
+    emit sendDatagram(buf,Len1,rightport, sSocket);
+    qDebug() << "Lock Messsage";
 }
